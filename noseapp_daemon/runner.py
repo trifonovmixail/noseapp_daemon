@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
 import psutil
 
 from noseapp_daemon import utils
@@ -102,6 +101,16 @@ class DaemonRunner(CallbackInterface):
         )
 
     @property
+    def cmd_with_prefix(self):
+        result = ''
+
+        if self.cmd_prefix:
+            result += self.cmd_prefix + ' '
+        result += self.cmd
+
+        return result
+
+    @property
     def started(self):
         return bool(self.process) or self.pid_file.exist
 
@@ -123,13 +132,7 @@ class DaemonRunner(CallbackInterface):
 
         self.before_start()
 
-        cmd = []
-
-        if self.cmd_prefix:
-            cmd.append(self.cmd_prefix)
-
-        cmd += self.cmd
-        cmd = ' '.join(cmd)
+        cmd = self.cmd_with_prefix
 
         process_options = self.process_options.copy()
 
